@@ -30,7 +30,6 @@ public class Trailer_Activity extends YouTubeBaseActivity implements YouTubePlay
     private ProgressBar progressBar;
     private long movie_id;
     private String video_id;
-    private static final int RECOVERY_REQUEST = 1;
     public static final String API_KEY= "AIzaSyDNumK0sm7rB88C3c9IK8bS4hhAvSx9bp0";
 
     @Override
@@ -45,9 +44,8 @@ public class Trailer_Activity extends YouTubeBaseActivity implements YouTubePlay
 
         trailer_view.initialize(API_KEY,this);
 
-
-
     }
+
 
     private void getVdeoId(final long movie_id) {
         AsyncTask<Integer,Void,Void> task=new AsyncTask<Integer, Void, Void>() {

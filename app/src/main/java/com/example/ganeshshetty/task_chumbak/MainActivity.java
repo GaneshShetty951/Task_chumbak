@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private MovieAdapter adapter;
     private ProgressBar progressBar;
-    LinearLayoutManager layoutmanager;
+    private LinearLayoutManager layoutmanager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -84,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 HttpURLConnection urlConnection;
                 URL url = null;
                 try {
-                    url = new URL("https://api.themoviedb.org/3/movie/upcoming?api_key=7075383d8b7a0ca221d3832b63e83150&language=en-US&page="+MainActivity.PAGE);
+                    url = new URL("https://api.themoviedb.org/3/movie/upcoming?api_key=7075383d8b7a0ca221d3832b63e83150&language=en-US&page="+ Integer.toString(MainActivity.PAGE));
                     urlConnection = (HttpURLConnection) url.openConnection();
                     int statusCode = urlConnection.getResponseCode();
 
