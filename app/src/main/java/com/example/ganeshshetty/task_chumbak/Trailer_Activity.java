@@ -26,10 +26,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class Trailer_Activity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
-    private YouTubePlayerView trailer_view;
+    private YouTubePlayerView trailerView;
     private ProgressBar progressBar;
-    private long movie_id;
-    private String video_id;
+    private long movieId;
+    private String videoId;
     public static final String API_KEY= "AIzaSyDNumK0sm7rB88C3c9IK8bS4hhAvSx9bp0";
 
     @Override
@@ -37,17 +37,17 @@ public class Trailer_Activity extends YouTubeBaseActivity implements YouTubePlay
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trailer);
 
-        trailer_view=(YouTubePlayerView) findViewById(R.id.trailer_view);
+        trailerView =(YouTubePlayerView) findViewById(R.id.trailer_view);
         progressBar=(ProgressBar)findViewById(R.id.progress_bar);
-        movie_id=getIntent().getLongExtra("movie_id",0);
-        getVdeoId(movie_id);
+        movieId =getIntent().getLongExtra("movie_id",0);
+        getVdeoId(movieId);
 
-        trailer_view.initialize(API_KEY,this);
+        trailerView.initialize(API_KEY,this);
 
     }
 
 
-    private void getVdeoId(final long movie_id) {
+    private void getVdeoId(final long movieId) {
         AsyncTask<Integer,Void,Void> task=new AsyncTask<Integer, Void, Void>() {
             @Override
             protected void onPreExecute() {
@@ -60,16 +60,16 @@ public class Trailer_Activity extends YouTubeBaseActivity implements YouTubePlay
                 HttpURLConnection urlConnection;
                 URL url = null;
                 try {
-                    url = new URL("https://api.themoviedb.org/3/movie/" + movie_id + "/videos?api_key=7075383d8b7a0ca221d3832b63e83150&language=en-US");
+                    url = new URL("https://api.themoviedb.org/3/movie/" +Long.toString(movieId) + "/videos?api_key=7075383d8b7a0ca221d3832b63e83150&language=en-US");
                     urlConnection = (HttpURLConnection) url.openConnection();
                     int statusCode = urlConnection.getResponseCode();
 
                     // 200 represents HTTP OK
                     if (statusCode == 200) {
-                        BufferedReader r = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                         StringBuilder response = new StringBuilder();
                         String line;
-                        while ((line = r.readLine()) != null) {
+                        while ((line = reader.readLine()) != null) {
                             response.append(line);
                         }
                         parseResult(response.toString());
@@ -110,7 +110,7 @@ public class Trailer_Activity extends YouTubeBaseActivity implements YouTubePlay
             if(trailer.length()!=0)
             {
                 JSONObject trailer_object=trailer.optJSONObject(0);
-                video_id=trailer_object.optString("key");
+                videoId =trailer_object.optString("key");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -123,7 +123,7 @@ public class Trailer_Activity extends YouTubeBaseActivity implements YouTubePlay
         youTubePlayer.setPlayerStateChangeListener(playerStateChangeListener);
         if(!b)
         {
-            youTubePlayer.cueVideo(video_id);
+            youTubePlayer.cueVideo(videoId);
         }
     }
 

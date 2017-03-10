@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private MovieAdapter adapter;
     private ProgressBar progressBar;
-    private LinearLayoutManager layoutmanager;
+    private LinearLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,21 +45,21 @@ public class MainActivity extends AppCompatActivity {
             mRecyclerView = (RecyclerView) findViewById(R.id.movierecycler);
             progressBar = (ProgressBar)findViewById(R.id.progress_bar);
             movieList = new ArrayList<>();
-            load_movie_list();
-            layoutmanager=new LinearLayoutManager(this);
-            mRecyclerView.setLayoutManager(layoutmanager);
+            loadMovieList();
+            layoutManager =new LinearLayoutManager(this);
+            mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    if(layoutmanager.findLastCompletelyVisibleItemPosition()==movieList.size()-1 && movieList.get(movieList.size()-1).getPage()<=MAX_PAGE ){
+                    if(layoutManager.findLastCompletelyVisibleItemPosition()==movieList.size()-1 && movieList.get(movieList.size()-1).getPage()<=MAX_PAGE ){
                         MainActivity.PAGE+=1;
-                        load_movie_list();
+                        loadMovieList();
                     }
                 }
             });
         }
         else {
-            Toast toast = Toast.makeText(MainActivity.this, "Mobile internet or Wifi Should be Active !", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(MainActivity.this, "Mobile internet or Wifi Should be Active !\n Restart app after connected to active internet connection. ", Toast.LENGTH_LONG);
             toast.show();
         }
     }
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private void load_movie_list() {
+    private void loadMovieList() {
         AsyncTask<Void,Void,Void> task=new AsyncTask<Void, Void, Void>() {
 
             @Override
