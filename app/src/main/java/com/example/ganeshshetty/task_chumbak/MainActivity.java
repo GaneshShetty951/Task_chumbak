@@ -3,10 +3,10 @@ package com.example.ganeshshetty.task_chumbak;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,24 +18,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG="MainActivity";
+    private static final String API_KEY="7075383d8b7a0ca221d3832b63e83150";
     private List<Movie> movieList;
     private static int MAX_PAGE;
     private static int PAGE=1;
     private RecyclerView mRecyclerView;
     private MovieAdapter adapter;
     private ProgressBar progressBar;
-    private LinearLayoutManager layoutManager;
+    private GridLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +45,16 @@ public class MainActivity extends AppCompatActivity {
             mRecyclerView = (RecyclerView) findViewById(R.id.movierecycler);
             progressBar = (ProgressBar)findViewById(R.id.progress_bar);
             movieList = new ArrayList<>();
+            progressBar.setVisibility(View.INVISIBLE);
             loadMovieList();
-            layoutManager =new LinearLayoutManager(this);
+            layoutManager =new GridLayoutManager(this,2);
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if(layoutManager.findLastCompletelyVisibleItemPosition()==movieList.size()-1 && movieList.get(movieList.size()-1).getPage()<=MAX_PAGE ){
                         MainActivity.PAGE+=1;
+                        progressBar.setVisibility(View.VISIBLE);
                         loadMovieList();
                     }
                 }
@@ -82,61 +84,97 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMovieList() {
-        AsyncTask<Void,Void,Void> task=new AsyncTask<Void, Void, Void>() {
 
+        if (API_KEY.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Please obtain your API KEY first from themoviedb.org", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+
+        Call<MovieResponse> call = apiService.getUpComingMovies(API_KEY,"en-US",MainActivity.PAGE);
+        call.enqueue(new Callback<MovieResponse>() {
             @Override
-            protected void onPreExecute() {
-                progressBar.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                Integer result = 0;
-                HttpURLConnection urlConnection;
-                URL url = null;
-                try {
-                    url = new URL("https://api.themoviedb.org/3/movie/upcoming?api_key=7075383d8b7a0ca221d3832b63e83150&language=en-US&page="+ Integer.toString(MainActivity.PAGE));
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    int statusCode = urlConnection.getResponseCode();
-
-                    // 200 represents HTTP OK
-                    if (statusCode == 200) {
-                        BufferedReader r = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                        StringBuilder response = new StringBuilder();
-                        String line;
-                        while ((line = r.readLine()) != null) {
-                            response.append(line);
-                        }
-                        parseResult(response.toString());
-                        result = 1; // Successful
-                    } else {
-                        result = 0; //"Failed to fetch data!";
-                    }
-                } catch (MalformedURLException e) {
-                    Log.e("MalformedURLException", e.toString());
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    Log.e("IOException", e.toString());
-                    e.printStackTrace();
-                }
-
-                if(result==0)
-                {
-                    Toast toast = Toast.makeText(MainActivity.this, "Failed to fetch data!", Toast.LENGTH_LONG);
-                    toast.show();
-                }
-                return null; //"Failed to fetch data!";
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                progressBar.setVisibility(View.GONE);
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                List<Movie> movies = null;
+                    movies=response.body().getResults();
+                Toast.makeText(MainActivity.this,"page"+MainActivity.PAGE,Toast.LENGTH_LONG).show();
+                movieList.addAll(movieList.size(),movies);
+                MAX_PAGE=response.body().getTotalPages();
                 adapter = new MovieAdapter(movieList, MainActivity.this);
                 mRecyclerView.setAdapter(adapter);
+                Toast.makeText(MainActivity.this,"total items"+movieList.size(),Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Number of movies received: " + movies.size());
+                progressBar.setVisibility(View.GONE);
             }
-        };
-        task.execute();
-    }
+
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+                Log.e(TAG, t.toString());
+            }
+
+        });
+
+
+
+
+
+//        AsyncTask<Void,Void,Void> task=new AsyncTask<Void, Void, Void>() {
+//
+//            @Override
+//            protected void onPreExecute() {
+//                progressBar.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//                Integer result = 0;
+//                HttpURLConnection urlConnection;
+//                URL url = null;
+//                try {
+//                    url = new URL("https://api.themoviedb.org/3/movie/upcoming?api_key=7075383d8b7a0ca221d3832b63e83150&language=en-US&page="+ Integer.toString(MainActivity.PAGE));
+//                    urlConnection = (HttpURLConnection) url.openConnection();
+//                    int statusCode = urlConnection.getResponseCode();
+//
+//                    // 200 represents HTTP OK
+//                    if (statusCode == 200) {
+//                        BufferedReader r = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+//                        StringBuilder response = new StringBuilder();
+//                        String line;
+//                        while ((line = r.readLine()) != null) {
+//                            response.append(line);
+//                        }
+//                        parseResult(response.toString());
+//                        result = 1; // Successful
+//                    } else {
+//                        result = 0; //"Failed to fetch data!";
+//                    }
+//                } catch (MalformedURLException e) {
+//                    Log.e("MalformedURLException", e.toString());
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    Log.e("IOException", e.toString());
+//                    e.printStackTrace();
+//                }
+//
+//                if(result==0)
+//                {
+//                    Toast toast = Toast.makeText(MainActivity.this, "Failed to fetch data!", Toast.LENGTH_LONG);
+//                    toast.show();
+//                }
+  //              return null; //"Failed to fetch data!";
+            }
+
+//            @Override
+//            protected void onPostExecute(Void aVoid) {
+//                progressBar.setVisibility(View.GONE);
+//                adapter = new MovieAdapter(movieList, MainActivity.this);
+//                mRecyclerView.setAdapter(adapter);
+//            }
+//        };
+//        task.execute();
+//    }
 
     private void parseResult(String s) {
         JSONObject response = null;

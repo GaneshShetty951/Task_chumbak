@@ -1,5 +1,7 @@
 package com.example.ganeshshetty.task_chumbak;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Ganesh Shetty on 09-03-2017.
  */
@@ -12,10 +14,14 @@ public class Movie {
     public void setPage(int page) {
         this.page = page;
     }
-
+    @SerializedName("page")
     int page;
+    @SerializedName("id")
     long id;
-    String title, thumbnail;
+    @SerializedName("title")
+    String title;
+    @SerializedName("poster_path")
+    String thumbnail;
 
     public Movie(long id, String title, String thumbnail,int page) {
         this.id = id;

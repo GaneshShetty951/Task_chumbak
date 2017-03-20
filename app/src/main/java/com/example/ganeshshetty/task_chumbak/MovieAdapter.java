@@ -2,6 +2,7 @@ package com.example.ganeshshetty.task_chumbak;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -59,6 +60,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.CustomViewHo
             itemView.setOnClickListener(this);
             this.thumbnail=(ImageView) itemView.findViewById(R.id.thumbnail);
             this.title=(TextView) itemView.findViewById(R.id.title);
+            Typeface typeface=Typeface.createFromAsset(pContext.getAssets(),"font/Roboto-MediumItalic.ttf");
+            this.title.setTypeface(typeface);
         }
 
 
