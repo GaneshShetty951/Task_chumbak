@@ -1,17 +1,11 @@
 package com.example.ganeshshetty.task_chumbak;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.example.ganeshshetty.task_chumbak.databinding.CardBinding;
 
 import java.util.List;
 
@@ -29,22 +23,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.CustomViewHo
 
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card, null);
-        CustomViewHolder viewHolder = new CustomViewHolder(view);
-        return viewHolder;
+
+        LayoutInflater layoutInflater = LayoutInflater.from(pContext);
+        CardBinding itemBinding = CardBinding.inflate(layoutInflater, parent, false);
+        return new CustomViewHolder(itemBinding);
     }
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
         final Movie movie=movieList.get(position);
-
-        holder.title.setText(movie.getTitle());
-        if (!TextUtils.isEmpty("https://image.tmdb.org/t/p/w200_and_h300_bestv2/"+movie.getThumbnail())) {
-            Picasso.with(pContext).load("https://image.tmdb.org/t/p/w200_and_h300_bestv2/"+movie.getThumbnail())
-                    .error(R.drawable.image)
-                    .placeholder(R.drawable.image)
-                    .into(holder.thumbnail);
-        }
+        holder.bind(movie);
     }
 
     @Override
@@ -52,24 +40,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.CustomViewHo
         return movieList.size();
     }
 
-    public class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        protected TextView title;
-        protected ImageView thumbnail;
-        public CustomViewHolder(View itemView) {
-            super(itemView);
-            itemView.setOnClickListener(this);
-            this.thumbnail=(ImageView) itemView.findViewById(R.id.thumbnail);
-            this.title=(TextView) itemView.findViewById(R.id.title);
-            Typeface typeface=Typeface.createFromAsset(pContext.getAssets(),"font/Roboto-MediumItalic.ttf");
-            this.title.setTypeface(typeface);
+    public class CustomViewHolder extends RecyclerView.ViewHolder{
+        private CardBinding binding;
+
+        public CustomViewHolder(CardBinding rowView) {
+            super(rowView.getRoot());
+            this.binding = rowView;
         }
 
-
-        @Override
-        public void onClick(View v) {
-            Intent trailer_intent=new Intent(pContext,Trailer_Activity.class);
-            trailer_intent.putExtra("movie_id",movieList.get(getPosition()).getId());
-            pContext.startActivity(trailer_intent);
+        public void bind(Movie movie)
+        {
+            binding.setVariable(BR.movie,movie);
+            binding.executePendingBindings();
         }
+
+//        @Override
+//        public void onClick(View v) {
+//            Intent trailer_intent=new Intent(pContext,Trailer_Activity.class);
+//            trailer_intent.putExtra("movie_id",movieList.get(getPosition()).getId());
+//            pContext.startActivity(trailer_intent);
+//        }
     }
 }

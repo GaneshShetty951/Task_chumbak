@@ -1,6 +1,10 @@
 package com.example.ganeshshetty.task_chumbak;
 
+import android.databinding.BindingAdapter;
+import android.widget.ImageView;
+
 import com.google.gson.annotations.SerializedName;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by Ganesh Shetty on 09-03-2017.
@@ -26,7 +30,8 @@ public class Movie {
     public Movie(long id, String title, String thumbnail,int page) {
         this.id = id;
         this.title = title;
-        this.thumbnail = thumbnail;
+        this.thumbnail = "https://image.tmdb.org/t/p/w200_and_h300_bestv2/"+thumbnail;
+        this.page=page;
     }
 
     public long getId() {
@@ -52,4 +57,15 @@ public class Movie {
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
+
+
+
+    @BindingAdapter({"bind:thumnbnail"})
+    public static void loadImage(ImageView view, String imageUrl) {
+        Picasso.with(view.getContext())
+                .load("https://image.tmdb.org/t/p/w200_and_h300_bestv2/"+imageUrl)
+                .placeholder(R.drawable.image)
+                .into(view);
+    }
+
 }
