@@ -23,7 +23,7 @@
         android:layout_height="match_parent"
         android:id="@+id/thumbnail"
         android:scaleType="centerCrop"
-        android:src="@{movie.thumbnail}"/>
+        app:thumbnail="@{movie.thumbnail}"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

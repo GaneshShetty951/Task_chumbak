@@ -1,8 +1,10 @@
 package com.example.ganeshshetty.task_chumbak;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.ganeshshetty.task_chumbak.databinding.CardBinding;
@@ -40,12 +42,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.CustomViewHo
         return movieList.size();
     }
 
-    public class CustomViewHolder extends RecyclerView.ViewHolder{
+    public class CustomViewHolder extends RecyclerView.ViewHolder {
         private CardBinding binding;
 
         public CustomViewHolder(CardBinding rowView) {
             super(rowView.getRoot());
             this.binding = rowView;
+            rowView.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent trailer_intent=new Intent(pContext,Trailer_Activity.class);
+                    trailer_intent.putExtra("movie_id",movieList.get(getPosition()).getId());
+                    pContext.startActivity(trailer_intent);
+                }
+            });
         }
 
         public void bind(Movie movie)
@@ -54,11 +64,5 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.CustomViewHo
             binding.executePendingBindings();
         }
 
-//        @Override
-//        public void onClick(View v) {
-//            Intent trailer_intent=new Intent(pContext,Trailer_Activity.class);
-//            trailer_intent.putExtra("movie_id",movieList.get(getPosition()).getId());
-//            pContext.startActivity(trailer_intent);
-//        }
     }
 }
